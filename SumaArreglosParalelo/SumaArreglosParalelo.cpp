@@ -5,10 +5,6 @@
 #include <omp.h>
 #include <ctime> // Para inicializar el generador de números aleatorios
 
-//#define N 1000
-//#define chunk 100
-//#define mostrar 10
-
 void imprimeArreglo(float* d, int mostrar);
 
 int main()
@@ -28,7 +24,7 @@ int main()
     std::cout << "Ingrese la cantidad de valores a mostrar: ";
     std::cin >> mostrar;
 
-    // Crear dinámicamente los arreglos
+    // Crear dinámicamente los arreglos, según el tamaño ingresado por el usuario
     float* a = new float[N];
     float* b = new float[N];
     float* c = new float[N];
@@ -36,20 +32,23 @@ int main()
     // Inicializar generador de números aleatorios
     std::srand(std::time(nullptr));
 
-    // Llenar los arreglos con valores aleatorios
+    // Llenar los arreglos 'a' y 'b' con números aleatorios entre 0 y 99
     for (int i = 0; i < N; i++)
     {
-        a[i] = static_cast<float>(std::rand() % 100); // Números entre 0 y 99
+        a[i] = static_cast<float>(std::rand() % 100); // Convertir a float
         b[i] = static_cast<float>(std::rand() % 100);
     }
 
+// Inicio de la sección paralela con OpenMP
 #pragma omp parallel for shared(a, b, c, chunk) schedule(static, chunk)
 
     for (int i = 0; i < N; i++)
     {
+        // Sumar los elementos correspondientes de los arreglos 'a' y 'b'
         c[i] = a[i] + b[i];
     }
 
+    // Imprimir los primeros elementos de los arreglos para verificar resultados
     std::cout << "Imprimiendo los primeros " << mostrar << " valores del arreglo a: " << std::endl;
     imprimeArreglo(a, mostrar);
     std::cout << "Imprimiendo los primeros " << mostrar << " valores del arreglo b: " << std::endl;
